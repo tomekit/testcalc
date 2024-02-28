@@ -12,6 +12,7 @@ btcBitbayTotal = 0
 btcBitbayKrakenTotal = 0
 class Trans:
     datetime = None
+    initialAmount = None
     amount = None
     price = None
     exchange = None
@@ -19,6 +20,7 @@ class Trans:
 
     def __init__(self, datetime, amount, price, exchange, row):
         self.datetime = datetime
+        self.initialAmount = amount
         self.amount = amount
         self.price = price
         self.exchange = exchange
@@ -59,7 +61,7 @@ def balanceFifo(all_trans):
 
                 # The element in the queue have more units and takes in the current transaction
                 if abs(tq.amount) > abs(t.amount):
-                    insertTransaction(tq.datetime, tq.exchange, t.datetime, t.exchange, math.copysign(t.amount, tq.amount), tq.price, t.price, tq.row, t.row)
+                    insertTransaction(tq.datetime, tq.exchange, t.datetime, t.exchange, math.copysign(t.amount, tq.amount), tq.initialAmount, tq.price, t.price, tq.row, t.row)
                     # update the amount of the element in the queue
                     tq.amount = tq.amount + t.amount
                     # return the element back to the same place
@@ -70,7 +72,7 @@ def balanceFifo(all_trans):
 
                 # The element from the queue and transaction have the same amount of units
                 if abs(tq.amount) == abs(t.amount):
-                    insertTransaction(tq.datetime, tq.exchange, t.datetime, t.exchange, math.copysign(t.amount, tq.amount), tq.price, t.price, tq.row, t.row)
+                    insertTransaction(tq.datetime, tq.exchange, t.datetime, t.exchange, math.copysign(t.amount, tq.amount), tq.initialAmount, tq.price, t.price, tq.row, t.row)
 
                     # update the amount in the transaction
                     t.amount = 0
@@ -82,7 +84,7 @@ def balanceFifo(all_trans):
                 if abs(tq.amount) < abs(t.amount):
                     # update the units in transaction, (remove element from the queue)
                     t.amount = t.amount + tq.amount
-                    insertTransaction(tq.datetime, tq.exchange, t.datetime, t.exchange, tq.amount, tq.price, t.price, tq.row, t.row)
+                    insertTransaction(tq.datetime, tq.exchange, t.datetime, t.exchange, tq.amount, tq.initialAmount, tq.price, t.price, tq.row, t.row)
                     logging.debug('Removed from queue: %s', tq.getInfo())
 
                     # the transaction has not been balanced,
@@ -101,7 +103,7 @@ def balanceFifo(all_trans):
         tq = qTransactions.popleft()
         logging.debug('Remained on list transaction: %s', tq.getInfo())
 
-def insertTransaction(dateBuy, exchangeBuy, dateSell, exchangeSell, amount, priceStart, priceEnd, posBuy, posSell):
+def insertTransaction(dateBuy, exchangeBuy, dateSell, exchangeSell, amount, amountBuy, priceStart, priceEnd, posBuy, posSell):
     global zyskTotal, zyskBitbayTotal, zyskBitbayKrakenTotal
     global btcTotal, btcBitbayTotal, btcBitbayKrakenTotal
     zysk = amount * (priceEnd - priceStart)
@@ -120,9 +122,9 @@ def insertTransaction(dateBuy, exchangeBuy, dateSell, exchangeSell, amount, pric
         zyskBitbayKrakenTotal += zysk
         btcBitbayKrakenTotal += amount
 
-    if (bitbaySprzedaz or bitbayKupno):
-        print("Data kupna={}, Giełda kupno={}, Data sprzedaży={}, Giełda sprzedaż={} ilość={}, cena zakupu={}, cena sprzedaży={}, zysk={}, pozycja kupna={}, pozycja sprzedaży={}". \
-          format(dateBuy, exchangeBuy, dateSell, exchangeSell, amount, priceStart, priceEnd, amount * (priceEnd - priceStart), posBuy, posSell))
+    if (bitbaySprzedaz or bitbayKupno): # pozycja kupna={}, pozycja sprzedaży={}
+        print("Data kupna={}, Giełda kupno={}, Data sprzedaży={}, Giełda sprzedaż={} ilość={}, oryg ilość. partia zakupu={} cena zakupu={}, cena sprzedaży={}, zysk={}". \
+          format(dateBuy, exchangeBuy, dateSell, exchangeSell, amount, amountBuy, priceStart, priceEnd, amount * (priceEnd - priceStart)))
 
 
 # Uncomment if you want to see more information
