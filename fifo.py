@@ -2,6 +2,7 @@ import logging
 from collections import deque
 import math
 import csv
+from dateparser import parse
 
 zyskTotal = 0
 zyskBitbayTotal = 0
@@ -122,18 +123,28 @@ def insertTransaction(dateBuy, exchangeBuy, dateSell, exchangeSell, amount, amou
         zyskBitbayKrakenTotal += zysk
         btcBitbayKrakenTotal += amount
 
+    priceStart = round(priceStart, 2)
+    priceEnd = round(priceEnd, 2)
+    zysk = round(zysk, 2)
+
+    amount = round(amount, 8)
+    amountBuy = round(amountBuy, 8)
+
+    dateSell = parse(dateSell).strftime('%Y-%m-%d %H:%M:%S')
+    dateBuy = parse(dateBuy).strftime('%Y-%m-%d %H:%M:%S')
+
     if (bitbaySprzedaz or bitbayKupno): # pozycja kupna={}, pozycja sprzedaży={}
-        print("Data kupna={}, Giełda kupno={}, Data sprzedaży={}, Giełda sprzedaż={} ilość={}, oryg ilość. partia zakupu={} cena zakupu={}, cena sprzedaży={}, zysk={}". \
-          format(dateBuy, exchangeBuy, dateSell, exchangeSell, amount, amountBuy, priceStart, priceEnd, amount * (priceEnd - priceStart)))
+        # print("Data kupna={}, Giełda kupno={}, Data sprzedaży={}, Giełda sprzedaż={} ilość={}, oryg ilość. partia zakupu={} cena zakupu={}, cena sprzedaży={}, zysk={}". \
+        #   format(dateBuy, exchangeBuy, dateSell, exchangeSell, amount, amountBuy, priceStart, priceEnd, zysk))
+        print("Sprzedaż={}, ilość={}, kurs={}PLN, giełda={}; Kupno={}, giełda={}, kurs={}PLN, partia={}BTC; Zysk={}PLN". \
+          format(dateSell, amount, priceStart, exchangeSell, dateBuy, exchangeBuy, priceEnd, amountBuy, zysk))
 
 
 # Uncomment if you want to see more information
 # logging.basicConfig(level=logging.DEBUG)
 
 trans_list = list()
-# with open('bitcoin_od_2018.csv', newline='') as csvfile:
-with open('bitcoin_2020_bez_coinmate.csv', newline='') as csvfile:
-# with open('bitcoin_2020_z_coinmate.csv', newline='') as csvfile:
+with open('bitcoin_2020.csv', newline='') as csvfile:
     spamreader = csv.DictReader(csvfile, delimiter=',', quotechar='"')
     i = 1
     for row in spamreader:
@@ -154,12 +165,20 @@ with open('bitcoin_2020_bez_coinmate.csv', newline='') as csvfile:
 balanceFifo(trans_list)
 
 print()
+
+zyskBitbayTotal = round(zyskBitbayTotal, 2)
+zyskBitbayKrakenTotal = round(zyskBitbayKrakenTotal, 2)
+
 # print("Zysk: ", zyskTotal)
-print("Bitbay sprzedaż zysk:", zyskBitbayTotal)
-print("Zysk ze sprzedaży partii kupionej na Bitbay:", zyskBitbayKrakenTotal)
+print("Bitbay zysk:", zyskBitbayTotal, 'PLN')
+print("Zysk ze sprzedaży partii kupionej na Bitbay:", zyskBitbayKrakenTotal, 'PLN')
 print()
 # print("BTC: ", btcTotal)
-print("Suma BTC sprzedaż Bitbay:", btcBitbayTotal)
-print("Suma BTC partii kupionej na Bitbay:", btcBitbayKrakenTotal)
+
+btcBitbayTotal = round(btcBitbayTotal, 8)
+btcBitbayKrakenTotal = round(btcBitbayKrakenTotal, 8)
+
+print("Suma BTC sprzedaż Bitbay:", btcBitbayTotal, 'BTC')
+print("Suma BTC partii kupionej na Bitbay:", btcBitbayKrakenTotal, 'BTC')
 
 trans_list.clear()
