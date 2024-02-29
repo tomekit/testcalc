@@ -159,11 +159,12 @@ with open('bitcoin_2020.csv', newline='') as csvfile:
         trans_list.append(trans)
 
 
+# Test selling more than bought - trans not indicated; There is a debug log: "Remained on list transaction" though
 # trans = Trans("2022-01-01", 1, 10, 'kraken', 0)
 # trans_list.append(trans)
-# trans = Trans("2022-01-02", 1, 15, 'kraken', 1)
+# trans = Trans("2022-01-03", -2, 20, 'bitbay', 1)
 # trans_list.append(trans)
-# trans = Trans("2022-01-03", -2, 20, 'bitbay', 2)
+# trans = Trans("2022-01-03", -3, 20, 'bitbay', 1)
 # trans_list.append(trans)
 
 balanceFifo(trans_list)
