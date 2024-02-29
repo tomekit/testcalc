@@ -62,7 +62,9 @@ def balanceFifo(all_trans):
 
                 # The element in the queue have more units and takes in the current transaction
                 if abs(tq.amount) > abs(t.amount):
-                    insertTransaction(tq.datetime, tq.exchange, t.datetime, t.exchange, math.copysign(t.amount, tq.amount), tq.initialAmount, tq.price, t.price, tq.row, t.row)
+                    # insertTransaction(tq.datetime, tq.exchange, t.datetime, t.exchange, math.copysign(t.amount, tq.amount), tq.initialAmount, tq.price, t.price, tq.row, t.row)
+                    amount = math.copysign(t.amount, tq.amount)
+                    insertTransaction(dateBuy=tq.datetime, exchangeBuy=tq.exchange, dateSell=t.datetime, exchangeSell=t.exchange, amount=amount, amountBuy=tq.initialAmount, priceStart=tq.price, priceEnd=t.price, posBuy=tq.row, posSell=t.row)
                     # update the amount of the element in the queue
                     tq.amount = tq.amount + t.amount
                     # return the element back to the same place
@@ -73,8 +75,9 @@ def balanceFifo(all_trans):
 
                 # The element from the queue and transaction have the same amount of units
                 if abs(tq.amount) == abs(t.amount):
-                    insertTransaction(tq.datetime, tq.exchange, t.datetime, t.exchange, math.copysign(t.amount, tq.amount), tq.initialAmount, tq.price, t.price, tq.row, t.row)
-
+                    # insertTransaction(tq.datetime, tq.exchange, t.datetime, t.exchange, math.copysign(t.amount, tq.amount), tq.initialAmount, tq.price, t.price, tq.row, t.row)
+                    amount = math.copysign(t.amount, tq.amount)
+                    insertTransaction(dateBuy=tq.datetime, exchangeBuy=tq.exchange, dateSell=t.datetime, exchangeSell=t.exchange, amount=amount, amountBuy=tq.initialAmount, priceStart=tq.price, priceEnd=t.price, posBuy=tq.row, posSell=t.row)
                     # update the amount in the transaction
                     t.amount = 0
                     logging.debug('Balanced, removed transaction: %s', t.getInfo())
@@ -85,7 +88,8 @@ def balanceFifo(all_trans):
                 if abs(tq.amount) < abs(t.amount):
                     # update the units in transaction, (remove element from the queue)
                     t.amount = t.amount + tq.amount
-                    insertTransaction(tq.datetime, tq.exchange, t.datetime, t.exchange, tq.amount, tq.initialAmount, tq.price, t.price, tq.row, t.row)
+                    amount = tq.amount
+                    insertTransaction(dateBuy=tq.datetime, exchangeBuy=tq.exchange, dateSell=t.datetime, exchangeSell=t.exchange, amount=amount, amountBuy=tq.initialAmount, priceStart=tq.price, priceEnd=t.price, posBuy=tq.row, posSell=t.row)
                     logging.debug('Removed from queue: %s', tq.getInfo())
 
                     # the transaction has not been balanced,
