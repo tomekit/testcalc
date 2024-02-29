@@ -136,8 +136,8 @@ def insertTransaction(dateBuy, exchangeBuy, dateSell, exchangeSell, amount, amou
     if (bitbaySprzedaz or bitbayKupno): # pozycja kupna={}, pozycja sprzedaży={}
         # print("Data kupna={}, Giełda kupno={}, Data sprzedaży={}, Giełda sprzedaż={} ilość={}, oryg ilość. partia zakupu={} cena zakupu={}, cena sprzedaży={}, zysk={}". \
         #   format(dateBuy, exchangeBuy, dateSell, exchangeSell, amount, amountBuy, priceStart, priceEnd, zysk))
-        print("Sprzedaż={}, ilość={}, kurs={}PLN, giełda={}; Kupno={}, giełda={}, kurs={}PLN, partia={}BTC; Zysk={}PLN". \
-          format(dateSell, amount, priceStart, exchangeSell, dateBuy, exchangeBuy, priceEnd, amountBuy, zysk))
+        print("Sprzedaż={}, ilość={}, kurs={}PLN, giełdaS={}; Kupno={}, giełdaK={}, kurs={}PLN, partia={}BTC; Zysk={}PLN". \
+          format(dateSell, amount, priceEnd, exchangeSell, dateBuy, exchangeBuy, priceStart, amountBuy, zysk))
 
 
 # Uncomment if you want to see more information
