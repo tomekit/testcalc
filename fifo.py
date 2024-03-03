@@ -11,6 +11,8 @@ zyskBitbayKrakenTotal = 0
 btcTotal = 0
 btcBitbayTotal = 0
 btcBitbayKrakenTotal = 0
+
+bitbayCounter = 0
 class Trans:
     datetime = None
     initialAmount = None
@@ -111,6 +113,8 @@ def balanceFifo(all_trans):
 def insertTransaction(dateBuy, exchangeBuy, dateSell, exchangeSell, amount, amountBuy, priceStart, priceEnd, posBuy, posSell):
     global zyskTotal, zyskBitbayTotal, zyskBitbayKrakenTotal
     global btcTotal, btcBitbayTotal, btcBitbayKrakenTotal
+    global bitbayCounter
+
     zysk = amount * (priceEnd - priceStart)
     zyskTotal += zysk
     btcTotal += amount
@@ -138,11 +142,12 @@ def insertTransaction(dateBuy, exchangeBuy, dateSell, exchangeSell, amount, amou
     dateBuy = parse(dateBuy).strftime('%Y-%m-%d %H:%M:%S')
 
     if (bitbaySprzedaz or bitbayKupno): # pozycja kupna={}, pozycja sprzedaży={}
+        bitbayCounter += 1
         # print("Data kupna={}, Giełda kupno={}, Data sprzedaży={}, Giełda sprzedaż={} ilość={}, oryg ilość. partia zakupu={} cena zakupu={}, cena sprzedaży={}, zysk={}". \
         #   format(dateBuy, exchangeBuy, dateSell, exchangeSell, amount, amountBuy, priceStart, priceEnd, zysk))
-        print("Sprzedaż={}, ilość={}, kurs={}PLN, giełdaS={}; Kupno={}, giełdaK={}, kurs={}PLN, partia={}BTC; Zysk={}PLN". \
-          format(dateSell, amount, priceEnd, exchangeSell, dateBuy, exchangeBuy, priceStart, amountBuy, zysk))
-
+        print("{}. Sprzedaż={}, ilość={}, kurs={}PLN, giełdaS={}; Kupno={}, giełdaK={}, kurs={}PLN, partia={}BTC; Zysk={}PLN". \
+              format(bitbayCounter, dateSell, amount, priceEnd, exchangeSell, dateBuy, exchangeBuy, priceStart, amountBuy, zysk))
+        print()
 
 # Uncomment if you want to see more information
 # logging.basicConfig(level=logging.DEBUG)
