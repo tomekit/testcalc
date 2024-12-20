@@ -201,8 +201,8 @@ def insertTransaction(dateBuy, exchangeBuy, dateSell, exchangeSell, amount, amou
 # logging.basicConfig(level=logging.DEBUG)
 
 trans_list = list()
-# with open('bitcoin_2020.csv', newline='') as csvfile:
-with open('bitcoin_2020_with2018_2019.csv', newline='') as csvfile:
+with open('bitcoin_2020.csv', newline='') as csvfile:
+# with open('bitcoin_2020_with2018_2019.csv', newline='') as csvfile:
     spamreader = csv.DictReader(csvfile, delimiter=',', quotechar='"')
     i = 1
     for row in spamreader:
@@ -227,7 +227,7 @@ print()
 zyskKrakenTotal = round(zyskKrakenTotal, 2)
 # zyskBitbayKrakenTotal = round(zyskBitbayKrakenTotal, 2)
 
-# print("Zysk: ", zyskTotal)
+print("Zysk: ", zyskTotal)
 print("Kraken zysk:", zyskKrakenTotal, 'PLN')
 # print("Zysk ze sprzedaży partii kupionej na Bitbay:", zyskBitbayKrakenTotal, 'PLN')
 print()
@@ -236,6 +236,7 @@ print()
 btcKrakenTotal = round(btcKrakenTotal, 8)
 # btcBitbayKrakenTotal = round(btcBitbayKrakenTotal, 8)
 
+print("Suma BTC:", btcTotal, 'BTC')
 print("Suma BTC sprzedaż Kraken:", btcKrakenTotal, 'BTC')
 # print("Suma BTC partii kupionej na Bitbay:", btcBitbayKrakenTotal, 'BTC')
 
