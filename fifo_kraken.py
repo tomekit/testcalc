@@ -3,9 +3,11 @@ from collections import deque
 import math
 import csv
 from dateparser import parse
+import sys
 
 zyskTotal = 0
 btcTotal = 0
+totalCounter = 0
 
 # zyskBitbayTotal = 0
 # zyskBitbayKrakenTotal = 0
@@ -34,9 +36,20 @@ class Trans:
         self.row = row
 
     def getInfo(self):
-        return (str(self.datetime) + "; " +
-                str(self.amount) + "; " +
-                str(self.price)) + "; "
+        if (self.amount > 0):
+            tranName = "Transakcja kupna"
+        else:
+            tranName = "Transakcja sprzedazy"
+        return (
+                str(tranName) + "; " +
+                str(self.exchange) + "; " +
+                str(self.datetime) + "; " +
+                "Left: " +str(self.amount) + "BTC; " +
+                "Price: " + str(self.price)
+        ) + "; "
+        # return (str(self.datetime) + "; " +
+        #         str(self.amount) + "; " +
+        #         str(self.price)) + "; "
 
 
 def balanceFifo(all_trans):
@@ -119,6 +132,7 @@ def balanceFifo(all_trans):
     while (len(qTransactions) > 0):
         tq = qTransactions.popleft()
         logging.debug('Remained on list transaction: %s', tq.getInfo())
+        sys.stdout.write("Remained on list transaction: %s\n" % tq.getInfo())
 
 
 def insertTransaction(dateBuy, exchangeBuy, dateSell, exchangeSell, amount, amountBuy, priceStart, priceEnd, posBuy,
@@ -133,6 +147,7 @@ def insertTransaction(dateBuy, exchangeBuy, dateSell, exchangeSell, amount, amou
 
     global zyskTotal
     global btcTotal
+    global totalCounter
 
     zysk = amount * (priceEnd - priceStart)
     zyskTotal += zysk
@@ -176,16 +191,7 @@ def insertTransaction(dateBuy, exchangeBuy, dateSell, exchangeSell, amount, amou
     dateSell = parse(dateSell).strftime('%Y-%m-%d %H:%M:%S')
     dateBuy = parse(dateBuy).strftime('%Y-%m-%d %H:%M:%S')
 
-    # BITBAY ZYSK - START
-    # if (bitbaySprzedaz or bitbayKupno): # pozycja kupna={}, pozycja sprzedaży={}
-    #     bitbayCounter += 1
-    #     # print("Data kupna={}, Giełda kupno={}, Data sprzedaży={}, Giełda sprzedaż={} ilość={}, oryg ilość. partia zakupu={} cena zakupu={}, cena sprzedaży={}, zysk={}". \
-    #     #   format(dateBuy, exchangeBuy, dateSell, exchangeSell, amount, amountBuy, priceStart, priceEnd, zysk))
-    #     print("{}. Sprzedaż={}, ilość={:f}BTC, kursS={}PLN, giełdaS={}; Kupno={}, giełdaK={}, kursK={}PLN, partia={:f}BTC; Zysk={}PLN". \
-    #           format(bitbayCounter, dateSell, amount, priceEnd, exchangeSell, dateBuy, exchangeBuy, priceStart, amountBuy, zysk))
-    #     print()
-    # BITBAY ZYSK - END
-
+    totalCounter += 1
     if (krakenSprzedaz):  # pozycja kupna={}, pozycja sprzedaży={}
         krakenCounter += 1
         # print("Data kupna={}, Giełda kupno={}, Data sprzedaży={}, Giełda sprzedaż={} ilość={}, oryg ilość. partia zakupu={} cena zakupu={}, cena sprzedaży={}, zysk={}". \
@@ -195,12 +201,20 @@ def insertTransaction(dateBuy, exchangeBuy, dateSell, exchangeSell, amount, amou
             format(krakenCounter, dateSell, amount, priceEnd, exchangeSell, dateBuy, exchangeBuy, priceStart, amountBuy,
                    zysk))
         print()
-
+    # else :
+    #     print(
+    #         "{}. Sprzedaż={}, ilość={:f}BTC, kursS={}PLN, giełdaS={}; Kupno={}, giełdaK={}, kursK={}PLN, partia={:f}BTC; Zysk={}PLN". \
+    #             format(krakenCounter, dateSell, amount, priceEnd, exchangeSell, dateBuy, exchangeBuy, priceStart,
+    #                    amountBuy,
+    #                    zysk))
+    #     print()
 
 # Uncomment if you want to see more information
 # logging.basicConfig(level=logging.DEBUG)
 
 trans_list = list()
+
+# with open('test.csv', newline='') as csvfile:
 with open('bitcoin_2020.csv', newline='') as csvfile:
 # with open('bitcoin_2020_with2018_2019.csv', newline='') as csvfile:
     spamreader = csv.DictReader(csvfile, delimiter=',', quotechar='"')
@@ -215,13 +229,13 @@ with open('bitcoin_2020.csv', newline='') as csvfile:
 # Test selling more than bought - trans not indicated; There is a debug log: "Remained on list transaction" though
 # trans = Trans("2022-01-01", 1, 10, 'kraken', 0)
 # trans_list.append(trans)
-# trans = Trans("2022-01-03", -2, 20, 'bitbay', 1)
+# trans = Trans("2022-01-03", -0.5, 25, 'bitbay', 1)
 # trans_list.append(trans)
-# trans = Trans("2022-01-03", -3, 20, 'bitbay', 1)
-# trans_list.append(trans)
+
 
 balanceFifo(trans_list)
 
+print()
 print()
 
 zyskKrakenTotal = round(zyskKrakenTotal, 2)
